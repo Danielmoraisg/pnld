@@ -1,0 +1,30 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+    command: bash -c "rm -rf tmp/pids && bin/rails server -p 3000 -b 0.0.0.0"
+    volumes:
+      - .:/pnld
+      - bundle-cache:/usr/local/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+volumes:
+  postgres-db:
+  bundle-cache:
